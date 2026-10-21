@@ -1,0 +1,103 @@
+---
+import { Image } from 'astro:assets';
+import { testimonials } from '../data/content';
+import counselling from '../assets/clinic-counselling.jpeg';
+const { lead, rest, total, consentWarning } = testimonials;
+---
+
+<section id="testimonials" class="section border-b border-line scroll-mt-20">
+  <div class="shell">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <div>
+        <p class="eyebrow" data-reveal="fade">In their words</p>
+        <h2 class="block-mask mt-5 max-w-[16ch] text-ink" style="font-size: var(--text-h1)">
+          <span>Said by people who teach medicine here.</span>
+        </h2>
+      </div>
+      <p class="text-[0.8125rem] text-ink-faint">
+        {total} published on the existing site
+      </p>
+    </div>
+
+    <!--
+      One lead quote at display size, three supporting ones beneath. Static —
+      no auto-advancing carousel, which on the old site hid 5 of 8 testimonials
+      including both institutional ones.
+    -->
+    {/* Quote and a real session photograph side by side. The photograph is
+        doing evidential work here, not decorative — it is the practice the
+        testimonials are describing. */}
+    <div class="mt-12 grid grid-cols-1 gap-10 border-t border-line pt-10 sm:mt-14 lg:grid-cols-12 lg:gap-14">
+      <figure class="relative lg:col-span-7" data-reveal>
+        <span
+          class="ghost-type pointer-events-none absolute -left-2 -top-4 select-none text-[11rem] text-clay/10 sm:-left-6 sm:text-[15rem]"
+          aria-hidden="true">“</span
+        >
+        <blockquote class="relative">
+          <p class="font-serif text-[clamp(1.5rem,1.1rem+1.7vw,2.25rem)] leading-[1.25] text-teal-900">
+            “{lead.quote}”
+          </p>
+        </blockquote>
+        <figcaption class="mt-6 flex items-baseline gap-3">
+          <span class="h-px w-8 flex-none bg-clay" aria-hidden="true"></span>
+          <span>
+            <span class="font-medium text-ink">{lead.name}</span>
+            <span class="text-ink-soft"> — {lead.detail}</span>
+          </span>
+        </figcaption>
+      </figure>
+
+      <figure class="lg:col-span-5" data-reveal style="--d: 1">
+        <div class="lift relative overflow-hidden rounded-sm" style="aspect-ratio: 4 / 3">
+          <Image
+            src={counselling}
+            alt="Dr. Rajeev Sharma in conversation with a patient in the Swayam consulting room"
+            widths={[600, 900, 1200]}
+            sizes="(min-width: 1024px) 40vw, 92vw"
+            class="h-full w-full object-cover"
+            loading="lazy"
+          />
+        </div>
+        <figcaption class="mt-3 text-[0.75rem] leading-relaxed text-ink-faint">
+          A counselling session at the Model Town clinic.
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="mt-12 grid grid-cols-1 gap-px border-t border-line md:grid-cols-3">
+      {
+        rest.map((t, i) => (
+          <figure
+            data-reveal
+            style={`--d: ${i}`}
+            class:list={[
+              'flex flex-col pt-8',
+              i > 0 && 'border-t border-line md:border-t-0 md:border-l md:pl-7',
+              i > 0 && 'md:-mt-px',
+            ]}
+          >
+            <blockquote>
+              <p class="text-ink-soft">“{t.quote}”</p>
+            </blockquote>
+            <figcaption class="mt-auto pt-4 text-[0.8125rem] leading-snug">
+              <span class="block font-medium text-ink">{t.name}</span>
+              <span class="text-ink-faint">{t.detail}</span>
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
+
+    <!--
+      Consent is NOT confirmed. This is stated plainly rather than annotated,
+      because publishing named people and organisations without permission is
+      the highest-risk item in the whole project (open-questions.md Q16).
+    -->
+    <p
+      class="mt-12 flex max-w-[70ch] gap-3 border-l-2 border-clay bg-clay-soft/60 p-4 text-[0.8125rem] leading-relaxed text-ink-soft"
+    >
+      <span class="font-semibold uppercase tracking-[0.08em] text-clay">Before launch</span>
+      <span>{consentWarning}</span>
+    </p>
+  </div>
+</section>

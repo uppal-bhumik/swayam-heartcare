@@ -1,0 +1,100 @@
+---
+import Logo from './Logo.astro';
+import Flag from './Flag.astro';
+import { nav, practice } from '../data/content';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="on-dark relative overflow-hidden bg-teal-900 text-teal-300">
+  {/* Ghost wordmark anchoring the foot of the page. */}
+  <div
+    class="pointer-events-none absolute inset-x-0 -bottom-6 hidden select-none overflow-hidden md:block"
+    aria-hidden="true"
+  >
+    <span class="ghost-type block whitespace-nowrap text-center text-[11rem] text-white/[0.03] lg:text-[15rem]">
+      SWAYAM
+    </span>
+  </div>
+
+  <div class="shell relative">
+    <div class="grid grid-cols-1 gap-10 py-14 sm:grid-cols-2 lg:grid-cols-12 lg:py-16">
+      <div class="lg:col-span-5">
+        <Logo tone="light" />
+        <p class="measure-tight mt-5 text-[0.9375rem] leading-relaxed">
+          Preventive cardiology, cardiac rehabilitation and wellbeing — for
+          people who would rather understand their own health than be managed
+          through it.
+        </p>
+        <p class="measure-tight mt-5 text-[0.75rem] leading-relaxed text-teal-300">
+          <Flag
+            note="Symbol is the real mark, cropped from the existing logo and knocked out of its red canvas. The supplied lockup is amber on red, which does not sit in this palette — colour direction and the vector source are both open (Q10, Q11)"
+          >
+            The symbol above is the practice's existing brand mark.
+          </Flag>
+        </p>
+      </div>
+
+      <nav aria-label="Footer" class="lg:col-span-3 lg:col-start-7">
+        <h2 class="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white" style="font-family: var(--font-sans)">
+          Pages
+        </h2>
+        <ul class="mt-3 space-y-1" data-stagger>
+          {
+            nav.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class="inline-block py-1.5 text-[0.9375rem] transition-colors hover:text-white"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="lg:col-span-3 lg:col-start-10">
+        <h2 class="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white" style="font-family: var(--font-sans)">
+          Contact
+        </h2>
+        <address class="mt-4 space-y-3 text-[0.9375rem] not-italic leading-relaxed">
+          <p>
+            <Flag note={practice.addressVerify}>
+              {practice.addressLines.join(', ')}
+            </Flag>
+          </p>
+          <p>
+            <a href={practice.phoneHref} class="transition-colors hover:text-white">
+              {practice.phoneDisplay}
+            </a>
+          </p>
+          <p>
+            <Flag note={practice.emailVerify}>
+              <a href={`mailto:${practice.email}`} class="break-all transition-colors hover:text-white">
+                {practice.email}
+              </a>
+            </Flag>
+          </p>
+        </address>
+
+        <p class="mt-5 text-[0.75rem] leading-relaxed text-teal-300">
+          Instagram, Facebook and LinkedIn profiles exist. They are left out of
+          this prototype until the client confirms the accounts are still
+          maintained.
+        </p>
+      </div>
+    </div>
+
+    <div
+      class="flex flex-col gap-3 border-t pt-6 pb-6 text-[0.75rem] sm:flex-row sm:items-center sm:justify-between lg:pb-20"
+      style="border-color: var(--color-line-dark)"
+    >
+      <p>© {year} {practice.name}</p>
+      <p class="text-teal-300">
+        Design prototype · not the live website · content pending client verification
+      </p>
+    </div>
+  </div>
+</footer>

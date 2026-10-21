@@ -1,0 +1,120 @@
+---
+import Flag from './Flag.astro';
+import { doctor } from '../data/content';
+
+/**
+ * A slow band of the institutions in Dr. Sharma's published career history.
+ *
+ * Deliberately NOT a logo wall. These are places he has worked, taken from the
+ * biography on the existing About page — stated as names, in his own words'
+ * order, with no marks, no endorsement implied and nothing added. A logo wall
+ * would need each institution's written permission (the same issue as the
+ * testimonials, Q16); a factual employment list does not.
+ *
+ * It exists to answer the question a cardiology patient actually has — where
+ * has this doctor practised — which is also what stops the page reading as a
+ * lifestyle brand.
+ */
+const items = doctor.career.map((c) => `${c.place} · ${c.where}`);
+// Two passes so the loop is seamless; the duplicate is hidden from screen readers.
+const loop = [...items, ...items];
+---
+
+<section class="marquee-band border-y border-line bg-paper-sunk py-7 sm:py-8">
+  <div class="shell">
+    <h2
+      class="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-ink-faint"
+      style="font-family: var(--font-sans)"
+      data-reveal="fade"
+    >
+      <Flag note={doctor.experienceNote}>Practised at · 20+ years</Flag>
+    </h2>
+  </div>
+
+  <div class="marquee mt-5" data-reveal="fade">
+    <div class="marquee-track">
+      {
+        loop.map((label, i) => (
+          <span class="marquee-item" aria-hidden={i >= items.length ? 'true' : undefined}>
+            <span class="font-serif text-[1.375rem] text-teal-900 sm:text-[1.625rem]">{label}</span>
+            <span class="marquee-dot" aria-hidden="true" />
+          </span>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .marquee {
+    position: relative;
+    overflow: hidden;
+    /* Fade the ends so items enter and leave rather than being chopped off. */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 6rem,
+      #000 calc(100% - 6rem),
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 6rem,
+      #000 calc(100% - 6rem),
+      transparent
+    );
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    align-items: center;
+  }
+
+  .marquee-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 2.25rem;
+    padding-right: 2.25rem;
+    white-space: nowrap;
+  }
+
+  .marquee-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--color-clay);
+    flex: none;
+  }
+
+  /* Half of the track is a duplicate, so translating by -50% loops seamlessly. */
+  @media (prefers-reduced-motion: no-preference) {
+    .marquee-track {
+      animation: marquee-slide 42s linear infinite;
+    }
+
+    .marquee:hover .marquee-track,
+    .marquee:focus-within .marquee-track {
+      animation-play-state: paused;
+    }
+  }
+
+  @keyframes marquee-slide {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* No motion: the band simply scrolls by hand, and nothing is cut off. */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      overflow-x: auto;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+  }
+</style>

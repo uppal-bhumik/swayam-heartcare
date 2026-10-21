@@ -1,0 +1,224 @@
+---
+import { form } from '../data/content';
+---
+
+<!--
+  DESIGN PROTOTYPE ONLY.
+
+  The form has no action, no method and no endpoint. Its submit handler calls
+  preventDefault() and renders a clearly-labelled demonstration panel. Nothing
+  is stored, nothing is transmitted, and the panel never claims an enquiry was
+  sent. Delivery gets wired up only once the client confirms where enquiries
+  should go (open-questions.md Q2).
+
+  Two details here deliberately correct faults found on the existing site:
+    - every label has a real `for`, and ids are unique
+    - input is PRESERVED on failure (the old site's handler reset the form on
+      error and left it populated on success — exactly backwards)
+-->
+<div class="lift rounded-md border border-line bg-paper-sunk p-6 sm:p-9" data-reveal>
+  <h2 class="text-ink" style="font-size: var(--text-h2)">{form.heading}</h2>
+  <p class="measure mt-3 text-ink-soft">{form.lead}</p>
+
+  <form id="callback-form" novalidate class="mt-8 space-y-6">
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <div>
+        <label for="cb-name" class="block text-[0.8125rem] font-semibold text-ink">
+          Your name <span class="font-normal text-clay">*</span>
+        </label>
+        <input
+          type="text"
+          id="cb-name"
+          name="name"
+          required
+          autocomplete="name"
+          aria-describedby="cb-name-error"
+          class="field-input mt-2 block h-12 w-full rounded-md border border-line bg-paper px-3.5 text-[1rem] text-ink transition-colors placeholder:text-ink-faint focus:border-clay"
+          placeholder="Full name"
+        />
+        <p id="cb-name-error" class="mt-1.5 hidden text-[0.8125rem] text-clay-deep" role="alert"></p>
+      </div>
+
+      <div>
+        <label for="cb-phone" class="block text-[0.8125rem] font-semibold text-ink">
+          Phone <span class="font-normal text-clay">*</span>
+        </label>
+        <input
+          type="tel"
+          id="cb-phone"
+          name="phone"
+          required
+          inputmode="tel"
+          autocomplete="tel"
+          aria-describedby="cb-phone-error cb-phone-hint"
+          class="field-input mt-2 block h-12 w-full rounded-md border border-line bg-paper px-3.5 text-[1rem] text-ink transition-colors placeholder:text-ink-faint focus:border-clay"
+          placeholder="10-digit mobile number"
+        />
+        <p id="cb-phone-hint" class="mt-1.5 text-[0.75rem] text-ink-faint">We call back on this number.</p>
+        <p id="cb-phone-error" class="mt-1.5 hidden text-[0.8125rem] text-clay-deep" role="alert"></p>
+      </div>
+    </div>
+
+    <div>
+      <label for="cb-email" class="block text-[0.8125rem] font-semibold text-ink">
+        Email <span class="font-normal text-ink-faint">(optional)</span>
+      </label>
+      <input
+        type="email"
+        id="cb-email"
+        name="email"
+        autocomplete="email"
+        aria-describedby="cb-email-error"
+        class="field-input mt-2 block h-12 w-full rounded-md border border-line bg-paper px-3.5 text-[1rem] text-ink transition-colors placeholder:text-ink-faint focus:border-clay"
+        placeholder="you@example.com"
+      />
+      <p id="cb-email-error" class="mt-1.5 hidden text-[0.8125rem] text-clay-deep" role="alert"></p>
+    </div>
+
+    <div>
+      <label for="cb-reason" class="block text-[0.8125rem] font-semibold text-ink">
+        What would you like help with?
+      </label>
+      <select
+        id="cb-reason"
+        name="reason"
+        class="field-input mt-2 block h-12 w-full appearance-none rounded-md border border-line bg-paper bg-[length:11px] bg-[right_1rem_center] bg-no-repeat px-3.5 pr-10 text-[1rem] text-ink transition-colors focus:border-clay"
+        style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7' fill='none'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%234a5a54' stroke-width='1.4'/%3E%3C/svg%3E&quot;)"
+      >
+        <option value="">Please choose…</option>
+        {form.reasons.map((r) => <option value={r}>{r}</option>)}
+      </select>
+    </div>
+
+    <fieldset>
+      <legend class="block text-[0.8125rem] font-semibold text-ink">Best time to call</legend>
+      <div class="mt-2.5 flex flex-wrap gap-2">
+        {
+          form.times.map((t, i) => (
+            <span>
+              <input type="radio" id={`cb-time-${i}`} name="time" value={t} class="peer sr-only" />
+              <label
+                for={`cb-time-${i}`}
+                class="inline-flex min-h-[2.75rem] cursor-pointer items-center rounded-md border border-line bg-paper px-4 text-[0.9375rem] text-ink-soft transition-colors hover:border-ink-faint peer-checked:border-clay peer-checked:bg-clay-soft peer-checked:text-ink peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-clay"
+              >
+                {t}
+              </label>
+            </span>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <div>
+      <label for="cb-message" class="block text-[0.8125rem] font-semibold text-ink">
+        Anything else <span class="font-normal text-ink-faint">(optional)</span>
+      </label>
+      <textarea
+        id="cb-message"
+        name="message"
+        rows="3"
+        class="field-input mt-2 block w-full rounded-md border border-line bg-paper px-3.5 py-3 text-[1rem] leading-relaxed text-ink transition-colors placeholder:text-ink-faint focus:border-clay"
+        placeholder="A short note, if it helps us prepare"></textarea>
+    </div>
+
+    <p class="text-[0.75rem] leading-relaxed text-ink-faint">
+      By sending this you agree we may contact you about your enquiry. A privacy
+      policy will be published before launch — the existing site has none (Q27).
+    </p>
+
+    <button type="submit" class="btn btn-primary w-full sm:w-auto">Request a call back</button>
+  </form>
+
+  <!-- Demonstration state. Never says the enquiry was sent. -->
+  <div
+    id="cb-demo"
+    hidden
+    tabindex="-1"
+    class="mt-6 rounded-md border-l-2 border-clay bg-clay-soft/70 p-5"
+  >
+    <p class="text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-clay">
+      Demonstration state — nothing was sent
+    </p>
+    <p class="mt-2 text-[0.9375rem] leading-relaxed text-ink-soft">
+      On the live site this is where the confirmation would appear, restating the
+      promise the clinic's own FAQ already makes: <em>“We will call you back to
+      book an appointment for you.”</em>
+    </p>
+    <p class="mt-2 text-[0.8125rem] leading-relaxed text-ink-faint">
+      {form.prototypeNotice}
+    </p>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    var f = document.getElementById('callback-form');
+    if (!f) return;
+    var demo = document.getElementById('cb-demo');
+
+    function fieldError(input, msg) {
+      var el = document.getElementById(input.id + '-error');
+      if (!el) return;
+      if (msg) {
+        el.textContent = msg;
+        el.hidden = false;
+        el.classList.remove('hidden');
+        input.setAttribute('aria-invalid', 'true');
+        input.style.borderColor = 'var(--color-clay)';
+      } else {
+        el.textContent = '';
+        el.hidden = true;
+        el.classList.add('hidden');
+        input.removeAttribute('aria-invalid');
+        input.style.borderColor = '';
+      }
+    }
+
+    var name = document.getElementById('cb-name');
+    var phone = document.getElementById('cb-phone');
+    var email = document.getElementById('cb-email');
+
+    function validate() {
+      var first = null;
+
+      if (!name.value.trim()) {
+        fieldError(name, 'Please tell us your name.');
+        first = first || name;
+      } else fieldError(name, '');
+
+      var digits = phone.value.replace(/\D/g, '');
+      if (!phone.value.trim()) {
+        fieldError(phone, 'Please give us a number to call.');
+        first = first || phone;
+      } else if (digits.length < 10) {
+        fieldError(phone, 'That looks too short — please check the number.');
+        first = first || phone;
+      } else fieldError(phone, '');
+
+      if (email.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim())) {
+        fieldError(email, 'Please check this email address.');
+        first = first || email;
+      } else fieldError(email, '');
+
+      return first;
+    }
+
+    [name, phone, email].forEach(function (input) {
+      input.addEventListener('blur', function () {
+        if (input.getAttribute('aria-invalid')) validate();
+      });
+    });
+
+    f.addEventListener('submit', function (e) {
+      e.preventDefault(); // Prototype: never submits, never transmits.
+      var first = validate();
+      if (first) {
+        first.focus();
+        return;
+      }
+      // Input is deliberately NOT cleared — the old site wiped it on failure.
+      demo.hidden = false;
+      demo.focus();
+    });
+  })();
+</script>

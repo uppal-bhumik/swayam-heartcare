@@ -1,0 +1,41 @@
+---
+import { why } from '../data/content';
+---
+
+<section id="about" class="section scroll-mt-20">
+  <div class="shell">
+    <!-- Heading sits left of centre, the lead sits right of it and lower:
+         an intentional offset rather than a centred stack. -->
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
+      <div class="lg:col-span-6">
+        <p class="eyebrow" data-reveal="fade">{why.eyebrow}</p>
+        <h2 class="block-mask mt-5 text-ink" style="font-size: var(--text-h1)"><span>{why.heading}</span></h2>
+      </div>
+      <div class="lg:col-span-5 lg:col-start-8 lg:pt-14">
+        <p class="measure text-ink-soft" style="font-size: var(--text-lead)" data-reveal>{why.lead}</p>
+      </div>
+    </div>
+
+    <!-- Three propositions, separated by hairlines rather than boxed into
+         cards. Numerals in the serif give the row its rhythm. -->
+    <ol class="mt-14 grid grid-cols-1 gap-px border-t border-line sm:mt-16 lg:grid-cols-3">
+      {
+        why.points.map((p, i) => (
+          <li
+            data-reveal
+            style={`--d: ${i}`}
+            class:list={[
+              'pt-8 lg:pt-10',
+              i > 0 && 'border-t border-line lg:border-t-0 lg:border-l lg:pl-8 xl:pl-10',
+              i > 0 && 'lg:-mt-px',
+            ]}
+          >
+            <span class="font-serif text-[0.9375rem] tracking-[0.1em] text-clay">{p.n}</span>
+            <h3 class="mt-4 text-ink" style="font-size: var(--text-h3)">{p.title}</h3>
+            <p class="measure-tight mt-3 text-ink-soft">{p.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>

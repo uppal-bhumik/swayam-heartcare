@@ -1,0 +1,72 @@
+---
+import { Image } from 'astro:assets';
+import Flag from './Flag.astro';
+import { practice } from '../data/content';
+import clinicRoom from '../assets/clinic-room.jpeg';
+
+/**
+ * Full-bleed band showing the real consulting room.
+ *
+ * This is a genuine photograph of the Model Town clinic, supplied by the
+ * client — the same shot the old site used, where it sat at 40% opacity behind
+ * a blue gradient so almost none of it was visible.
+ *
+ * It is a wide-angle phone photograph: dim, a little noisy and busy at the
+ * edges. A deep scrim and a slight blur at the margins turn those weaknesses
+ * into atmosphere while keeping the room readable — the point is "this is a
+ * real place", not a tour of the furniture.
+ */
+---
+
+<section class="relative isolate overflow-hidden bg-teal-900">
+  <Image
+    src={clinicRoom}
+    alt="The Swayam consulting room in Model Town, Rohtak: a desk, examination couch and bookshelves"
+    widths={[900, 1400, 2000]}
+    sizes="100vw"
+    class="absolute inset-0 -z-10 h-full w-full scale-105 object-cover"
+    style="filter: blur(2px) saturate(0.82) brightness(0.72)"
+    loading="lazy"
+  />
+
+  {/* Directional scrim: heavy on the left where the text sits, lifting to the
+      right so the room is still legible. */}
+  <div
+    class="absolute inset-0 -z-10"
+    style="background: linear-gradient(100deg, rgba(14,59,51,.94) 0%, rgba(14,59,51,.84) 38%, rgba(14,59,51,.5) 100%)"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="shell on-dark">
+    <div class="max-w-[46ch] py-20 sm:py-24 lg:py-28">
+      <p class="eyebrow" data-reveal="fade">The clinic</p>
+
+      <h2 class="block-mask mt-5 text-white" style="font-size: var(--text-h2)">
+        <span>Where the consultations happen.</span>
+      </h2>
+
+      <p class="mt-5 text-teal-300" data-reveal style="--d: 1">
+        The fourth-floor room in Model Town, Rohtak — used for consultation and
+        for the counselling and diet sessions described above.
+      </p>
+
+      <address class="mt-7 text-[0.9375rem] not-italic leading-relaxed text-white" data-reveal style="--d: 2">
+        <Flag note={practice.addressVerify}>
+          {practice.addressLines.join(', ')}
+        </Flag>
+      </address>
+
+      {/* Stronger border than the usual ghost button: the standard hairline
+          disappears against a photograph. */}
+      <div class="mt-7 flex flex-wrap gap-3" data-reveal style="--d: 3">
+        <a href={practice.phoneHref} class="btn btn-ghost !border-white/40 backdrop-blur-sm">
+          Call {practice.phoneDisplay}
+        </a>
+        <a href="#contact" class="btn btn-ghost !border-white/40 backdrop-blur-sm">
+          Visiting details
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

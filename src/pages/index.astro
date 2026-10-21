@@ -1,0 +1,73 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import WhySwayam from '../components/WhySwayam.astro';
+import DoctorProfile from '../components/DoctorProfile.astro';
+import Services from '../components/Services.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Organisations from '../components/Organisations.astro';
+import VisitContact from '../components/VisitContact.astro';
+import Footer from '../components/Footer.astro';
+import MobileActionBar from '../components/MobileActionBar.astro';
+import PulseRule from '../components/PulseRule.astro';
+import Marquee from '../components/Marquee.astro';
+import ClinicBand from '../components/ClinicBand.astro';
+---
+
+<Base
+  title="Swayam Heartcare &amp; Wellness — Preventive Cardiology & Cardiac Rehabilitation, Rohtak"
+  description="Dr. Rajeev Sharma's practice in Model Town, Rohtak. Preventive cardiology, cardiac rehabilitation, stress management, diet and counselling. Request a call back."
+>
+  <Header />
+  <main id="main">
+    <Hero />
+
+    {/*
+      Stacked scroll, used once on the page. "Why Swayam" pins at the top of
+      the viewport while the founder panel rises over it — the chapter break
+      into the most important section. The ECG divider stays with the pinned
+      panel so the founder panel slides over it too.
+    */}
+    <div class="relative">
+      <div class="stack-base">
+        <WhySwayam />
+        <div class="shell"><PulseRule class="py-2" /></div>
+      </div>
+      <div class="stack-over">
+        <DoctorProfile />
+      </div>
+    </div>
+
+    {/* Reads as a continuation of his credentials, which is why it sits here
+        rather than being dropped in as decoration somewhere neutral. */}
+    <Marquee />
+
+    <Services />
+
+    {/* Breaks the longest unbroken stretch of paper on the page, and does it
+        with the real room rather than a tint. */}
+    <ClinicBand />
+
+    <Testimonials />
+
+    {/*
+      Second and last stack. Organisations pins while the contact panel rises
+      over it — the page's destination arriving on top of its final pitch.
+      It is the only other section short enough to pin without being clipped
+      (768px; Services and Testimonials are both over 1100px).
+    */}
+    <div class="relative">
+      <div class="stack-base">
+        {/* Provisional — see component header and open-questions.md Q1 */}
+        <Organisations />
+        <div class="shell"><PulseRule class="py-2" /></div>
+      </div>
+      <div class="stack-over">
+        <VisitContact />
+      </div>
+    </div>
+  </main>
+  <Footer />
+  <MobileActionBar />
+</Base>

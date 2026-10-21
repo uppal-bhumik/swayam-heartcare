@@ -1,0 +1,37 @@
+---
+/**
+ * An ECG trace used as a section divider, in place of a plain hairline.
+ *
+ * Not decoration for its own sake: the practice's own brand mark is a head with
+ * a heartbeat line through it, so this is that motif enlarged. It draws itself
+ * once when scrolled into view and then stays put. Used sparingly — twice on
+ * the page — so it stays a punctuation mark rather than a tic.
+ */
+interface Props {
+  tone?: 'paper' | 'dark';
+  class?: string;
+}
+const { tone = 'paper', class: className = '' } = Astro.props;
+const stroke = tone === 'dark' ? 'var(--color-teal-300)' : 'var(--color-clay)';
+const base = tone === 'dark' ? 'var(--color-line-dark)' : 'var(--color-line)';
+---
+
+<div class={`pulse-rule relative ${className}`} aria-hidden="true">
+  {/* Static hairline underneath, so the divider reads even before it draws
+      and on browsers or settings where it never animates at all. */}
+  <div class="absolute inset-x-0 top-1/2 h-px" style={`background:${base}`}></div>
+  <svg
+    viewBox="0 0 1200 48"
+    preserveAspectRatio="none"
+    class="relative block h-10 w-full sm:h-12"
+    fill="none"
+  >
+    <path
+      d="M0 24 H510 q10 -8 20 0 H550 l8 6 l10 -30 l10 36 l8 -12 H620 q14 -10 28 0 H1200"
+      stroke={stroke}
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      vector-effect="non-scaling-stroke"></path>
+  </svg>
+</div>

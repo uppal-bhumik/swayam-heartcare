@@ -1,0 +1,847 @@
+@import 'tailwindcss';
+
+@import '@fontsource-variable/fraunces/index.css';
+@import '@fontsource-variable/inter/index.css';
+
+/* ---------------------------------------------------------------------------
+   Design tokens — "Clinical Warmth"
+   The whole visual system lives here. Nothing below should hard-code a colour,
+   a font size or a spacing step that is not derived from one of these.
+   --------------------------------------------------------------------------- */
+@theme {
+  /* Colour -------------------------------------------------------------- */
+  --color-paper: #f9f9f7; /* page background — barely warm, never pure white */
+  --color-paper-sunk: #f2f2ee; /* recessed panels */
+  --color-ink: #13241f; /* headlines, primary text */
+  --color-ink-soft: #4a5a54; /* secondary text, captions */
+  /* 4.97:1 on paper — the lighter grey this started as failed AA at 12px. */
+  --color-ink-faint: #646f6a; /* labels, meta */
+
+  --color-teal-900: #0e3b33; /* deep sections, footer */
+  --color-teal-600: #1f6f5f; /* structural accent, links */
+  --color-teal-300: #8fb9ae; /* on-dark secondary text */
+  --color-teal-100: #e3efea; /* tinted panels */
+
+  --color-clay: #c2603f; /* THE accent — primary actions only */
+  --color-clay-deep: #a44f32; /* accent hover */
+  --color-clay-soft: #f6eae4; /* accent panel background */
+
+  --color-line: #e2ded6; /* hairline rules on paper */
+  --color-line-dark: #28514740; /* hairline rules on teal */
+
+  /* Type ---------------------------------------------------------------- */
+  --font-serif: 'Fraunces Variable', 'Source Serif 4', Georgia, serif;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+
+  /* Fluid scale: never overwhelms a 375px viewport, never looks timid at 1440 */
+  --text-display: clamp(2.5rem, 1.42rem + 4.6vw, 4.75rem);
+  --text-h1: clamp(2.1rem, 1.35rem + 3.2vw, 3.75rem);
+  --text-h2: clamp(1.75rem, 1.3rem + 1.9vw, 2.65rem);
+  --text-h3: clamp(1.25rem, 1.12rem + 0.55vw, 1.5rem);
+  --text-lead: clamp(1.0625rem, 1rem + 0.5vw, 1.3125rem);
+  --text-body: 1.0625rem;
+  --text-small: 0.9375rem;
+  --text-label: 0.75rem;
+
+  /* Layout -------------------------------------------------------------- */
+  --spacing-gutter: 1.25rem;
+  --radius-sm: 1px;
+  --radius-md: 2px;
+  --radius-pill: 999px;
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+   --------------------------------------------------------------------------- */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* offset for the sticky header when jumping to an anchor */
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.65;
+    font-synthesis-weight: none;
+    -webkit-font-smoothing: antialiased;
+    /* Clearance for the fixed mobile action bar. */
+    padding-bottom: calc(4.25rem + env(safe-area-inset-bottom));
+  }
+
+  @media (min-width: 1024px) {
+    body {
+      padding-bottom: 0;
+    }
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    /* Fraunces optical sizing + a touch of softness reads warmer at display sizes */
+    font-variation-settings: 'SOFT' 0, 'WONK' 0;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Visible focus everywhere, on both paper and teal grounds. */
+  :focus-visible {
+    outline: 2px solid var(--color-clay);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+  }
+
+  .on-dark :focus-visible {
+    outline-color: #f0a98c;
+  }
+
+  ::selection {
+    background: var(--color-clay-soft);
+    color: var(--color-ink);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Components — kept deliberately small
+   --------------------------------------------------------------------------- */
+@layer components {
+  /* Page shell. One container, one gutter, used everywhere. */
+  .shell {
+    width: 100%;
+    max-width: 78rem;
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+  }
+
+  @media (min-width: 768px) {
+    .shell {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .shell {
+      padding-inline: 3.5rem;
+    }
+  }
+
+  /* Comfortable measure. Applied to prose blocks, never to the grid itself. */
+  .measure {
+    max-width: 62ch;
+  }
+  .measure-tight {
+    max-width: 48ch;
+  }
+
+  /* Eyebrow label — the one repeating typographic motif of the site. */
+  .eyebrow {
+    font-size: var(--text-label);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .eyebrow::before {
+    content: '';
+    width: 1.75rem;
+    height: 1px;
+    background: var(--color-clay);
+    flex: none;
+  }
+
+  .on-dark .eyebrow {
+    color: var(--color-teal-300);
+  }
+
+  /* Buttons ------------------------------------------------------------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0.75rem 1.5rem;
+    font-size: var(--text-small);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease,
+      color 160ms ease;
+    text-align: center;
+  }
+
+  .btn-primary {
+    background: var(--color-clay);
+    color: #fff;
+  }
+  .btn-primary:hover {
+    background: var(--color-clay-deep);
+  }
+
+  .btn-ghost {
+    border-color: var(--color-line);
+    color: var(--color-ink);
+    background: transparent;
+  }
+  .btn-ghost:hover {
+    border-color: var(--color-ink);
+  }
+
+  .on-dark .btn-ghost {
+    border-color: var(--color-line-dark);
+    color: #fff;
+  }
+  .on-dark .btn-ghost:hover {
+    border-color: var(--color-teal-300);
+  }
+
+  /* Hairline rule — the main section separator, in place of colour bands. */
+  .rule {
+    border: 0;
+    border-top: 1px solid var(--color-line);
+  }
+  .on-dark .rule {
+    border-top-color: var(--color-line-dark);
+  }
+
+  /* Section rhythm ------------------------------------------------------ */
+  .section {
+    padding-block: clamp(3.5rem, 2rem + 6vw, 7.5rem);
+  }
+  .section-tight {
+    padding-block: clamp(2.75rem, 1.75rem + 4vw, 5rem);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Prototype annotations
+   Content that the Phase 1 audit could not verify is marked in the markup and
+   carries a permanent, very quiet dotted underline. Switching the notes on
+   (the control is bottom-left) reveals a label saying what must be confirmed.
+   This exists so no unverified claim is ever presented as established fact.
+   --------------------------------------------------------------------------- */
+@layer components {
+  .unverified {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: color-mix(in oklab, var(--color-clay) 45%, transparent);
+    text-underline-offset: 0.25em;
+    text-decoration-thickness: 1px;
+  }
+
+  .unverified > .note {
+    display: none;
+  }
+
+  :root[data-notes='on'] .unverified {
+    background: color-mix(in oklab, var(--color-clay-soft) 70%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-clay-soft) 70%, transparent);
+    border-radius: var(--radius-sm);
+  }
+
+  :root[data-notes='on'] .on-dark .unverified {
+    background: color-mix(in oklab, var(--color-clay) 24%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-clay) 24%, transparent);
+  }
+
+  :root[data-notes='on'] .unverified > .note {
+    display: inline-block;
+    margin-left: 0.4em;
+    vertical-align: 0.35em;
+    font-family: var(--font-sans);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #fff;
+    background: var(--color-clay);
+    padding: 0.15em 0.45em;
+    border-radius: var(--radius-sm);
+    line-height: 1.5;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   MOTION
+   ---------------------------------------------------------------------------
+   Three rules this system must never break:
+
+   1. Content is visible by default. Animation only engages once JS has set
+      `.js` on <html> AND the viewer welcomes motion. If the script fails, is
+      blocked, or the observer never fires, the page is simply static and
+      complete. The old site faded every h1/p/li in from opacity 0.1 via jQuery
+      and went blank when JS failed — that must not be repeated in any form.
+   2. A safety timer reveals everything after 2.5s regardless, so nothing can
+      get stuck mid-transition.
+   3. Everything is short, small-distance and eased. Nothing loops, nothing
+      bounces, nothing moves purely for decoration.
+   --------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The reveal primitive. `--d` sets a stagger step; `data-reveal` the flavour. */
+  html.js [data-reveal] {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+      transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+    transition-delay: calc(var(--d, 0) * 65ms);
+    will-change: opacity, transform;
+  }
+
+  html.js [data-reveal='fade'] {
+    transform: none;
+  }
+
+  html.js [data-reveal='rise-lg'] {
+    transform: translateY(40px);
+  }
+
+  html.js [data-reveal='left'] {
+    transform: translateX(-24px);
+  }
+
+  html.js [data-reveal='scale'] {
+    transform: scale(0.965);
+  }
+
+  html.js [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
+  }
+
+  /* The first screen animates with pure CSS, on load, with no JavaScript in the
+     path at all. It must never wait on a script or an observer — so the hero
+     uses `.enter` and `.line-mask`, and only content further down the page uses
+     the observer-driven `[data-reveal]` above. */
+  .enter {
+    animation: enter-up 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    animation-delay: calc(var(--d, 0) * 65ms);
+  }
+
+  .enter-scale {
+    animation: enter-scale 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    animation-delay: calc(var(--d, 0) * 65ms);
+  }
+
+  /* Headline lines lift out from a clipping mask — the one "designed" entrance,
+     reserved for the hero so it stays special. */
+  .line-mask > span {
+    animation: line-up 0.75s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    animation-delay: calc(var(--d, 0) * 80ms);
+  }
+
+  /* The ECG rule draws itself when it comes into view. */
+  html.js .pulse-rule path {
+    stroke-dasharray: 1500;
+    stroke-dashoffset: 1500;
+  }
+
+  html.js .pulse-rule.is-in path {
+    animation: pulse-draw 1.8s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  }
+}
+
+@keyframes enter-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes enter-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.965);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes line-up {
+  from {
+    transform: translateY(105%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes pulse-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* The clipping mask itself must exist regardless of motion preference, or the
+   headline lines would have nothing to slide out of. */
+.line-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   INTERACTION & DEPTH
+   Hover and focus states that reward pointing at something, plus the small
+   amount of elevation the design allows.
+   --------------------------------------------------------------------------- */
+@layer components {
+  /* Buttons lift very slightly and the arrow walks forward. */
+  .btn {
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease,
+      color 160ms ease,
+      transform 180ms cubic-bezier(0.22, 0.61, 0.36, 1),
+      box-shadow 180ms ease;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px -6px color-mix(in oklab, var(--color-clay) 60%, transparent);
+  }
+
+  .btn-ghost:hover {
+    transform: translateY(-1px);
+  }
+
+  .btn .arrow {
+    transition: transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .btn:hover .arrow {
+    transform: translateX(3px);
+  }
+
+  /* Nav links draw an underline from the left. */
+  .nav-link {
+    position: relative;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0.25rem;
+    height: 1px;
+    width: 100%;
+    background: var(--color-clay);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .nav-link:hover::after,
+  .nav-link:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  /* Service rows: the number steps aside, a clay rule grows, the row warms. */
+  .svc-row {
+    position: relative;
+    transition: background-color 300ms ease;
+  }
+
+  .svc-row::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: -1px;
+    height: 1px;
+    width: 100%;
+    background: var(--color-clay);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 500ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .svc-row:hover::before {
+    transform: scaleX(1);
+  }
+
+  .svc-row:hover {
+    background: color-mix(in oklab, var(--color-clay-soft) 42%, transparent);
+  }
+
+  .svc-num {
+    display: inline-block;
+    transition: transform 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .svc-row:hover .svc-num {
+    transform: translateX(5px);
+  }
+
+  /* Restrained elevation — used on the form card and the framed images only. */
+  .lift {
+    box-shadow:
+      0 1px 2px rgba(19, 36, 31, 0.04),
+      0 12px 32px -16px rgba(19, 36, 31, 0.16);
+  }
+
+  .lift-dark {
+    box-shadow: 0 18px 48px -22px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Reading-progress hairline across the top of the header. */
+  .progress-bar {
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .progress-bar {
+        animation: progress-grow linear both;
+        animation-timeline: scroll(root block);
+      }
+    }
+  }
+}
+
+@keyframes progress-grow {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   TEXTURE & GHOST TYPE
+   Two cheap devices that stop large flat areas of colour reading as empty.
+   --------------------------------------------------------------------------- */
+
+/* A single fixed grain plate over the whole page. Barely perceptible on its
+   own; what it does is give the paper and the deep teal a surface. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+  opacity: 0.032;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 190px 190px;
+}
+
+@layer components {
+  /* Oversized wordmark used as a ground tone, never as readable text. */
+  .ghost-type {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    line-height: 0.8;
+    letter-spacing: 0.02em;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  /* A keyword in the hero headline, underscored by a stroke that draws itself. */
+  .mark-underline {
+    position: relative;
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .mark-underline::after {
+    content: '';
+    position: absolute;
+    left: -0.02em;
+    right: -0.02em;
+    bottom: 0.06em;
+    height: 0.075em;
+    border-radius: 999px;
+    background: var(--color-clay);
+    opacity: 0.85;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .mark-underline::after {
+      animation: draw-underline 0.75s cubic-bezier(0.22, 0.61, 0.36, 1) 1.55s both;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mark-underline::after {
+      transform: scaleX(1);
+    }
+  }
+
+  /* Vertical spine beside the services list, filling as it is scrolled past.
+     Where scroll timelines are unsupported it simply stands as a full rule. */
+  .svc-spine {
+    transform-origin: top;
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .svc-spine {
+        animation: spine-grow linear both;
+        animation-timeline: view();
+        animation-range: cover 6% cover 82%;
+      }
+    }
+  }
+
+  /* Form fields take a clay underline on focus, under the focus ring. Done with
+     an inset shadow rather than a wrapper element so the markup stays flat. */
+  .field-input {
+    transition:
+      border-color 200ms ease,
+      box-shadow 240ms cubic-bezier(0.22, 0.61, 0.36, 1),
+      background-color 200ms ease;
+  }
+
+  .field-input:focus {
+    border-color: var(--color-clay);
+    box-shadow: inset 0 -2px 0 0 var(--color-clay);
+    background-color: #fff;
+  }
+
+  /* Primary CTA leans very slightly toward the cursor. Pointer devices only. */
+  .magnetic {
+    transition:
+      transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1),
+      background-color 160ms ease,
+      box-shadow 180ms ease;
+  }
+}
+
+@keyframes draw-underline {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes spine-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   TEXT REVEALS
+   Section headings slide up from behind a mask and settle their tracking as
+   they land. Works on headings of any number of lines, unlike the per-line
+   mask used in the hero. Observer-driven, so each fires when it is reached.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  html.js .block-mask {
+    overflow: hidden;
+    padding-bottom: 0.08em;
+  }
+
+  html.js .block-mask > * {
+    display: block;
+    transform: translateY(100%);
+    opacity: 0;
+    letter-spacing: 0.012em;
+    transition:
+      transform 0.85s cubic-bezier(0.22, 0.61, 0.36, 1),
+      opacity 0.55s ease,
+      letter-spacing 0.85s cubic-bezier(0.22, 0.61, 0.36, 1);
+    transition-delay: calc(var(--d, 0) * 70ms);
+  }
+
+  html.js .block-mask.is-in > * {
+    transform: none;
+    opacity: 1;
+    letter-spacing: inherit;
+  }
+
+  /* The clay dash in front of every eyebrow draws itself. */
+  html.js .eyebrow[data-reveal]::before {
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) 0.12s;
+  }
+
+  html.js .eyebrow[data-reveal].is-in::before {
+    transform: scaleX(1);
+  }
+
+  /* Staggered list items. The parent carries `data-stagger`; children fade up
+     in sequence without each needing its own observer. */
+  html.js [data-stagger] > * {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+      transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  html.js [data-stagger].is-in > * {
+    opacity: 1;
+    transform: none;
+  }
+
+  html.js [data-stagger] > *:nth-child(1) { transition-delay: 0ms; }
+  html.js [data-stagger] > *:nth-child(2) { transition-delay: 60ms; }
+  html.js [data-stagger] > *:nth-child(3) { transition-delay: 120ms; }
+  html.js [data-stagger] > *:nth-child(4) { transition-delay: 180ms; }
+  html.js [data-stagger] > *:nth-child(5) { transition-delay: 240ms; }
+  html.js [data-stagger] > *:nth-child(6) { transition-delay: 300ms; }
+  html.js [data-stagger] > *:nth-child(7) { transition-delay: 360ms; }
+  html.js [data-stagger] > *:nth-child(n + 8) { transition-delay: 420ms; }
+}
+
+/* ---------------------------------------------------------------------------
+   HERO HEADLINE — word-by-word reveal
+   Each word rises out of its own mask with a slight rotation, staggered across
+   roughly 1.7s. Longer and more deliberate than a two-line slide, and it is
+   the only place on the page that gets this treatment. Pure CSS: it runs on
+   load with no script involved.
+   --------------------------------------------------------------------------- */
+.word-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.1em;
+}
+
+.word-mask > span {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .word-mask > span {
+    animation: word-up 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    animation-delay: calc(var(--d, 0) * 85ms);
+  }
+}
+
+@keyframes word-up {
+  from {
+    transform: translateY(108%) rotate(2.5deg);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   STACKED SCROLL
+   The outgoing panel pins while the next one rises over it, like a card being
+   dealt on top. Used once, leading into the founder section, so it reads as a
+   deliberate chapter break rather than a trick repeated down the page.
+
+   Guarded on viewport height: the pinned panel is shown in full, so if it
+   cannot fit it simply does not pin and the page scrolls normally. No JS.
+   --------------------------------------------------------------------------- */
+@media (min-width: 1024px) {
+  .stack-base {
+    position: sticky;
+    /* `--stack-top` is measured in JS: 0 when the panel fits, negative when it
+       is taller than the viewport so it pins bottom-aligned instead of having
+       its lower half clipped. A height media query was the wrong tool — it
+       switched the effect off entirely on any window under 900px tall. */
+    top: var(--stack-top, 0px);
+    z-index: 0;
+  }
+
+  .stack-over {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* The pinned panel recedes as it is covered. Chrome/Edge; elsewhere it is
+     simply covered, which still reads correctly. */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .stack-base > * {
+        animation: stack-recede linear both;
+        animation-timeline: view();
+        animation-range: exit -10% exit 90%;
+        transform-origin: 50% 40%;
+      }
+    }
+  }
+}
+
+@keyframes stack-recede {
+  to {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   SERVICE DECK
+   The seven services as three panels that stack as you scroll — each pins a
+   little lower than the last, so the edges of the ones beneath stay visible
+   and the group reads as a deck rather than a list that vanished.
+
+   Each panel must be opaque or the one beneath shows through. Guarded on
+   viewport height for the same reason as the section stacks: a pinned panel
+   taller than the screen would be clipped, so below the guard the panels
+   simply sit one after another and scroll normally.
+   --------------------------------------------------------------------------- */
+@layer components {
+  .deck-card {
+    background: var(--color-paper);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+  }
+}
+
+@media (min-width: 1024px) {
+  .deck-card {
+    position: sticky;
+    /* Same treatment: the staggered offset unless the panel is too tall, in
+       which case JS bottom-aligns it. */
+    top: var(--deck-top, calc(5.5rem + var(--i, 0) * 1.1rem));
+  }
+
+  /* Later panels cast onto the ones below, which is what sells the depth. */
+  .deck-card + .deck-card {
+    box-shadow:
+      0 -1px 0 0 var(--color-line),
+      0 -20px 44px -24px rgba(19, 36, 31, 0.3);
+  }
+}

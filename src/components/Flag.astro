@@ -1,0 +1,19 @@
+---
+/**
+ * Marks a piece of content the Phase 1 audit could not verify.
+ *
+ * Always renders a very quiet dotted underline so the uncertainty is never
+ * silently lost. Turning prototype notes on (control bottom-left) reveals a
+ * label saying exactly what has to be confirmed with the client.
+ */
+interface Props {
+  note: string;
+  label?: string;
+}
+const { note, label = 'verify' } = Astro.props;
+---
+
+<span class="unverified" title={note}>
+  <slot />
+  <span class="note" role="note">{label}: {note}</span>
+</span>

@@ -1,0 +1,61 @@
+---
+import { organisations as org } from '../data/content';
+---
+
+<!--
+  PROVISIONAL SECTION.
+
+  Everything here derives from one paragraph on the existing About page. The
+  audit inferred this is a significant business line (7 of 8 testimonials
+  describe group sessions), but the client has not confirmed it is still
+  offered — see open-questions.md Q1.
+
+  To remove: delete this component's line in src/pages/index.astro and the
+  "For Organisations" entry in src/data/content.ts. Nothing else depends on it.
+-->
+<section id="organisations" class="section-tight bg-clay-soft/50 scroll-mt-20">
+  <div class="shell">
+    <div class="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14">
+      <div class="lg:col-span-6">
+        <div class="flex flex-wrap items-center gap-3">
+          <p class="eyebrow" data-reveal="fade">{org.eyebrow}</p>
+          <span
+            class="rounded-pill border border-clay/35 px-2.5 py-1 text-[0.625rem] font-semibold uppercase tracking-[0.1em] text-clay"
+            >Provisional</span
+          >
+        </div>
+
+        <h2 class="block-mask mt-5 text-ink" style="font-size: var(--text-h2)"><span>{org.heading}</span></h2>
+        <p class="measure mt-5 text-ink-soft" data-reveal>{org.body}</p>
+        <p class="measure mt-3 text-ink-soft">{org.followUp}</p>
+
+        <a href="#contact" class="btn btn-primary mt-8">Enquire about a workshop</a>
+      </div>
+
+      <div class="lg:col-span-5 lg:col-start-8">
+        <h3 class="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-ink-faint" style="font-family: var(--font-sans)">
+          Described as running for
+        </h3>
+        <ul class="mt-4 border-t border-clay/20" data-stagger>
+          {
+            org.audiences.map((a) => (
+              <li class="border-b border-clay/20 py-3.5 font-serif text-xl text-teal-900">{a}</li>
+            ))
+          }
+        </ul>
+
+        <p class="mt-6 text-[0.75rem] leading-relaxed text-ink-faint">
+          Taken from the practice's own published description. No workshop
+          format, duration, outcome or client relationship has been added.
+        </p>
+      </div>
+    </div>
+
+    <p
+      class="mt-10 flex max-w-[76ch] gap-3 border-l-2 border-clay bg-paper/70 p-4 text-[0.8125rem] leading-relaxed text-ink-soft"
+    >
+      <span class="font-semibold uppercase tracking-[0.08em] text-clay">Note</span>
+      <span>{org.provisionalNote}</span>
+    </p>
+  </div>
+</section>

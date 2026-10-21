@@ -1,0 +1,116 @@
+---
+import Flag from './Flag.astro';
+import { services, servicesNote, benefitFrom } from '../data/content';
+
+/**
+ * The seven published services as a three-panel deck.
+ *
+ * Grouped 3 / 3 / 1, with the last panel carrying the self-qualification list
+ * alongside the seventh service so it has the weight to close the sequence
+ * rather than trailing off on its own.
+ *
+ * Still not a card grid: inside each panel the services keep the numbered
+ * editorial rows, with the number in its own column forming a spine down the
+ * panel. The deck is what is stacking, not seven repeated boxes.
+ */
+// Grouped by the practice's own numbering rather than by invented themes —
+// naming the groups would impose a reading of the services that the source
+// does not make. The split is presentation only; the order is theirs.
+const groups = [services.slice(0, 3), services.slice(3, 6), services.slice(6)];
+const panels = groups.map((items) => ({
+  label:
+    items.length > 1
+      ? `Services ${items[0].n}–${items[items.length - 1].n}`
+      : `Service ${items[0].n}`,
+  items,
+}));
+---
+
+<section id="services" class="section border-b border-line scroll-mt-20">
+  <div class="shell">
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
+      <div class="lg:col-span-5">
+        <p class="eyebrow" data-reveal="fade">What we do</p>
+        <h2 class="block-mask mt-5 text-ink" style="font-size: var(--text-h1)">
+          <span>Seven strands, one programme.</span>
+        </h2>
+      </div>
+      <div class="lg:col-span-5 lg:col-start-8 lg:pt-12">
+        <p class="measure text-ink-soft">
+          Each can be taken on its own, or together as the full programme.{' '}
+          <Flag note={servicesNote} label="confirm">Session length and format vary.</Flag>
+        </p>
+      </div>
+    </div>
+
+    <!-- The deck. Three panels, each pinning slightly lower than the last. -->
+    <div class="mt-12 space-y-5 sm:mt-16">
+      {
+        panels.map((panel, p) => (
+          <section class="deck-card px-5 py-7 sm:px-9 sm:py-9" style={`--i: ${p}`}>
+            <header class="flex items-baseline justify-between gap-6 border-b border-line pb-5">
+              <h3
+                class="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-ink-faint"
+                style="font-family: var(--font-sans)"
+              >
+                {panel.label}
+              </h3>
+              <span class="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-ink-faint">
+                {p + 1} / {panels.length}
+              </span>
+            </header>
+
+            <ol>
+              {panel.items.map((s) => (
+                <li class="svc-row border-b border-line last:border-b-0">
+                  <div
+                    class="grid grid-cols-1 gap-x-8 gap-y-2 py-6 sm:grid-cols-12 sm:py-7"
+                    data-reveal
+                  >
+                    <div class="sm:col-span-1">
+                      <span class="svc-num font-serif text-[0.9375rem] tracking-[0.1em] text-clay">
+                        {s.n}
+                      </span>
+                    </div>
+                    <h4 class="sm:col-span-5 text-ink" style="font-size: var(--text-h3)">
+                      {s.name}
+                    </h4>
+                    <p class="sm:col-span-6 text-ink-soft">{s.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+
+            {/* The closing panel carries the self-qualification list, so the
+                deck ends on "is this me?" rather than on a lone service. */}
+            {
+              p === panels.length - 1 && (
+                <div class="mt-7 grid grid-cols-1 gap-8 border-t border-line pt-7 lg:grid-cols-12 lg:gap-12">
+                  <div class="lg:col-span-4">
+                    <h4 class="text-ink" style="font-size: var(--text-h3)" data-reveal>
+                      This is likely for you if…
+                    </h4>
+                  </div>
+                  <ul
+                    class="lg:col-span-8 grid grid-cols-1 gap-x-10 gap-y-0 sm:grid-cols-2"
+                    data-stagger
+                  >
+                    {benefitFrom.map((b) => (
+                      <li class="flex items-start gap-3 border-b border-line py-3 text-[0.9375rem] text-ink-soft last:border-b-0 sm:[&:nth-last-child(2)]:border-b-0">
+                        <span
+                          class="mt-[0.5rem] size-1 flex-none rounded-full bg-teal-600"
+                          aria-hidden="true"
+                        />
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )
+            }
+          </section>
+        ))
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,50 @@
+---
+import { Image } from 'astro:assets';
+import mark from '../assets/swayam-mark.png';
+
+/**
+ * Wordmark for the prototype.
+ *
+ * The symbol is the practice's REAL brand mark, lifted from the existing logo
+ * (`images/original.png` on the live site — a 7438x5911 PNG whose artwork
+ * occupies about 13% of the canvas). It has been cropped to the tile and the
+ * solid red canvas knocked out to transparency so it sits on any ground.
+ *
+ * The lettering is set in the proposed typeface rather than reproducing the
+ * supplied amber-on-red lockup, which does not sit in this palette. The
+ * original is kept at src/assets/swayam-logo-original.png for comparison.
+ * No vector source is published and ownership is unconfirmed — Q10 / Q11.
+ */
+interface Props {
+  tone?: 'ink' | 'light';
+  class?: string;
+}
+const { tone = 'ink', class: className = '' } = Astro.props;
+const isLight = tone === 'light';
+---
+
+<a
+  href="#top"
+  class={`group inline-flex items-center gap-2.5 ${className}`}
+  aria-label="Swayam Heartcare and Wellness — back to top"
+>
+  <Image
+    src={mark}
+    alt=""
+    widths={[64, 128]}
+    sizes="32px"
+    class="size-7 flex-none rounded-[5px] sm:size-8"
+    loading="eager"
+  />
+  <span class="flex flex-col leading-none">
+    <span
+      class="font-serif text-[1.0625rem] font-medium tracking-[0.17em]"
+      style={`color: ${isLight ? '#fff' : 'var(--color-ink)'}`}>SWAYAM</span
+    >
+    <span
+      class="mt-[3px] text-[0.5625rem] font-semibold uppercase tracking-[0.17em]"
+      style={`color: ${isLight ? 'var(--color-teal-300)' : 'var(--color-ink-faint)'}`}
+      >Heartcare &amp; Wellness</span
+    >
+  </span>
+</a>

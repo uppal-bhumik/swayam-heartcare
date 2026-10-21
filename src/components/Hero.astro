@@ -1,0 +1,178 @@
+---
+import { Image } from 'astro:assets';
+import Flag from './Flag.astro';
+import { hero, practice } from '../data/content';
+import heroImage from '../assets/hero-consultation.png';
+
+const [line1, line2] = hero.headline.split('\n');
+
+// The last word of the first line carries the drawn underline. Splitting it out
+// here keeps the emphasis a presentation decision rather than markup baked into
+// the content file.
+const l1Words = line1.trim().split(' ');
+const l1Key = l1Words.pop();
+
+// Every word gets its own mask so the headline can rise a word at a time.
+// The last word of line one carries the drawn underline.
+const words1 = [...l1Words.map((t) => ({ t, mark: false })), { t: l1Key, mark: true }];
+const words2 = line2.trim().split(' ').map((t) => ({ t, mark: false }));
+---
+
+<section class="relative overflow-hidden border-b border-line">
+  {/* A single very soft warm wash behind the first screen. No blobs, no
+      gradient banding — it just stops the top of the page reading as flat. */}
+  <div
+    class="pointer-events-none absolute inset-0 -z-10"
+    style="background: radial-gradient(880px 520px at 76% 14%, rgba(227,239,234,.6), transparent 72%)"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="shell">
+    <div
+      class="grid grid-cols-1 items-stretch gap-10 pb-12 pt-12 md:pb-16 md:pt-16 lg:grid-cols-12 lg:gap-12 lg:pb-20 lg:pt-20"
+    >
+      <!-- Text column: deliberately narrower than half, so the composition is
+           asymmetric rather than a 50/50 split. -->
+      <div class="lg:col-span-7 lg:pr-8">
+        <p class="eyebrow enter" style="--d: 0">
+          <Flag note={hero.eyebrowVerify}>{hero.eyebrow}</Flag>
+        </p>
+
+        <h1 class="mt-6 text-ink" style="font-size: var(--text-display)">
+          <span class="block">
+            {
+              words1.map((w, i) => (
+                <>
+                  <span class="word-mask" style={`--d: ${i + 1}`}>
+                    <span>{w.mark ? <span class="mark-underline">{w.t}</span> : w.t}</span>
+                  </span>
+                  {i < words1.length - 1 ? ' ' : ''}
+                </>
+              ))
+            }
+          </span>
+          <span class="block text-teal-600">
+            {
+              words2.map((w, i) => (
+                <>
+                  <span class="word-mask" style={`--d: ${i + words1.length + 1}`}>
+                    <span>{w.t}</span>
+                  </span>
+                  {i < words2.length - 1 ? ' ' : ''}
+                </>
+              ))
+            }
+          </span>
+        </h1>
+
+        <p
+          class="measure enter mt-6 text-ink-soft"
+          style="font-size: var(--text-lead); --d: 10"
+        >
+          {hero.lead}
+        </p>
+
+        <div
+          class="enter mt-9 flex flex-col gap-3 sm:flex-row sm:items-center"
+          style="--d: 12"
+        >
+          <a href="#contact" class="btn btn-primary magnetic">
+            Request a call back
+            <svg class="arrow" width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">
+              <path d="M9 1l4 4-4 4M13 5H1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </a>
+          <a href={practice.phoneHref} class="btn btn-ghost">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path
+                d="M14.5 11.3v2a1.3 1.3 0 0 1-1.46 1.33 13.2 13.2 0 0 1-5.75-2.05 13 13 0 0 1-4-4A13.2 13.2 0 0 1 1.24 2.8 1.33 1.33 0 0 1 2.56 1.33h2a1.33 1.33 0 0 1 1.33 1.15c.08.64.24 1.27.46 1.87a1.33 1.33 0 0 1-.3 1.4l-.85.85a10.67 10.67 0 0 0 4 4l.85-.85a1.33 1.33 0 0 1 1.4-.3c.6.22 1.23.38 1.87.46a1.33 1.33 0 0 1 1.15 1.35Z"
+                stroke="currentColor"
+                stroke-width="1.3"
+                stroke-linecap="round"
+                stroke-linejoin="round"></path>
+            </svg>
+            {practice.phoneDisplay}
+          </a>
+        </div>
+      </div>
+
+      <!-- Image column -->
+      <div class="relative flex flex-col lg:col-span-5">
+        {/* A slab of teal behind the photograph, offset down-right. Two planes
+            instead of one is what gives the hero depth on a flat background. */}
+        <div
+          class="pointer-events-none absolute -bottom-3 -right-3 top-6 hidden rounded-sm bg-teal-100 sm:block lg:-bottom-4 lg:-right-4"
+          style="left: 1.5rem"
+          aria-hidden="true"
+        >
+        </div>
+
+        <figure
+          class="lift relative aspect-[4/3] min-h-0 overflow-hidden rounded-sm lg:aspect-auto lg:flex-1"
+        >
+          <Image
+            src={heroImage}
+            alt="A doctor in a white coat talking with two people across a consulting-room desk"
+            widths={[600, 900, 1400]}
+            sizes="(min-width: 1024px) 44vw, 92vw"
+            class="h-full w-full object-cover"
+            loading="eager"
+            fetchpriority="high"
+          />
+          <div
+            class="pointer-events-none absolute inset-2 sm:inset-3"
+            style="border: 1px solid rgba(255,255,255,.28)"
+            aria-hidden="true"
+          >
+          </div>
+        </figure>
+
+        <!--
+          This image is NOT a photograph of this practice. It appears to be AI
+          generated, and the doctor in it resembles Dr. Sharma without being a
+          photograph of him. It stands in for the real consulting-room shot and
+          must be replaced before launch — publishing a synthetic image of an
+          identifiable doctor and a clinic that does not exist would be a
+          credibility problem, and quite possibly a regulatory one.
+        -->
+        <p class="enter relative mt-3 text-[0.75rem] leading-relaxed text-ink-faint" style="--d: 14">
+          <Flag
+            note="Appears to be an AI-generated image, not a photograph of this practice or of Dr. Sharma. Placeholder only — must be replaced with a real consulting-room photograph before launch"
+            label="placeholder"
+          >
+            Placeholder image — not a photograph of the clinic.
+          </Flag>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Credential strip. Facts only, each flagged until the client confirms. -->
+  <div class="border-t border-line bg-paper-sunk">
+    <div class="shell">
+      <dl class="grid grid-cols-2 divide-line sm:grid-cols-4 sm:divide-x">
+        {
+          hero.credentials.map((c, i) => (
+            <div
+              data-reveal
+              style={`--d: ${i}`}
+              class:list={[
+                'py-5 sm:py-6',
+                i % 2 === 1 && 'border-l border-line sm:border-l-0',
+                i > 1 && 'border-t border-line sm:border-t-0',
+                'sm:px-6',
+                i === 0 && 'sm:pl-0',
+              ]}
+            >
+              <dt class="font-serif text-xl text-teal-900 sm:text-2xl">
+                <Flag note={c.verify}>{c.value}</Flag>
+              </dt>
+              <dd class="mt-1 text-[0.8125rem] leading-snug text-ink-soft">{c.label}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </div>
+</section>

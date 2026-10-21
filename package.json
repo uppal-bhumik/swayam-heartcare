@@ -1,0 +1,24 @@
+{
+  "name": "swayam-heartcare-prototype",
+  "version": "0.1.0",
+  "description": "Homepage design prototype for Swayam Heartcare and Wellness, Rohtak",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "build:artifact": "astro build && node scripts/relativise-assets.mjs"
+  },
+  "type": "module",
+  "dependencies": {
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.3.8",
+    "tailwindcss": "^4.3.3"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  }
+}

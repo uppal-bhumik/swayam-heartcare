@@ -1,0 +1,329 @@
+---
+import '../styles/global.css';
+import { practice } from '../data/content';
+
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+
+/**
+ * The existing site has no meta description, no Open Graph tags and no
+ * structured data on any page (website-audit.md §10). Only facts published on
+ * the live site go in here — no opening hours and no geo coordinates, because
+ * neither exists and neither may be invented.
+ */
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'MedicalClinic',
+  name: practice.name,
+  url: 'https://swayamheartcare.com',
+  telephone: '+919588739904',
+  email: practice.email,
+  medicalSpecialty: 'Cardiovascular',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '4th Floor, Dhouchak Complex, opposite Choturam Polytechnic, Model Town',
+    addressLocality: 'Rohtak',
+    addressRegion: 'Haryana',
+    postalCode: '124001',
+    addressCountry: 'IN',
+  },
+};
+---
+
+<!doctype html>
+<html lang="en" id="top">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta name="theme-color" content="#0e3b33" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    <!--
+      Motion opt-in, set before first paint so revealed elements do not flash.
+
+      This runs in <head> and arms its own safety net in the same breath: if the
+      observer below never runs, or throws, or the browser is doing something
+      unexpected, `revealAll` fires at 2.5s and the page is complete. `.js` is
+      only ever set when IntersectionObserver exists and the viewer welcomes
+      motion, so there is no path where content ends up permanently hidden.
+    -->
+    <script is:inline>
+      (function () {
+        try {
+          var ok =
+            'IntersectionObserver' in window &&
+            !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          if (!ok) return;
+          var root = document.documentElement;
+          root.classList.add('js');
+          window.__revealAll = function () {
+            root.classList.remove('js');
+          };
+          setTimeout(function () {
+            if (!root.dataset.revealReady) window.__revealAll();
+          }, 2500);
+        } catch (e) {
+          /* no motion, fully visible page */
+        }
+      })();
+    </script>
+  </head>
+
+  <body>
+    <a
+      href="#main"
+      class="sr-only rounded-md bg-clay px-4 py-2 text-sm font-semibold text-white focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60]"
+      >Skip to content</a
+    >
+
+    <slot />
+
+    <!--
+      Prototype notes toggle.
+
+      Progressive enhancement only: with JavaScript off the page is complete and
+      every unverified item still carries its dotted underline. This merely
+      reveals the labels. Deliberately not in the header — it is a tool for the
+      review conversation, not part of the proposed design.
+    -->
+    <button
+      id="notes-toggle"
+      type="button"
+      aria-pressed="false"
+      hidden
+      class="fixed bottom-4 left-4 z-50 hidden items-center gap-2 rounded-pill border border-line bg-paper/95 px-3.5 py-2 text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-ink-soft shadow-[0_2px_14px_rgba(19,36,31,0.1)] backdrop-blur transition-colors hover:border-ink hover:text-ink lg:flex"
+    >
+      <span
+        class="size-1.5 rounded-full bg-ink-faint transition-colors"
+        id="notes-dot"
+        aria-hidden="true"></span>
+      Prototype notes
+    </button>
+
+    <!--
+      Reveal-on-scroll. Elements carrying `data-reveal` get `.is-in` once they
+      enter the viewport; `--d` on the element staggers siblings. Each one is
+      unobserved after firing, so nothing re-animates on the way back up.
+    -->
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        if (!root.classList.contains('js')) return;
+        root.dataset.revealReady = '1';
+
+        // The hero is not in here: it animates with pure CSS on load, so the
+        // first screen never depends on this script running.
+        var targets = [].slice.call(
+          document.querySelectorAll('[data-reveal], [data-stagger], .block-mask, .pulse-rule')
+        );
+        if (!targets.length) {
+          window.__revealAll();
+          return;
+        }
+
+        // Pass 1 — anything already on the first screen is revealed directly,
+        // without waiting for an observer callback. The first screen must never
+        // depend on IntersectionObserver timing, which can be throttled during
+        // load. Two frames pass first so the hidden state paints and the
+        // entrance transition actually runs.
+        function revealInView() {
+          for (var i = targets.length - 1; i >= 0; i--) {
+            var el = targets[i];
+            if (el.getBoundingClientRect().top < window.innerHeight * 0.95) {
+              el.classList.add('is-in');
+              targets.splice(i, 1);
+              if (io) io.unobserve(el);
+            }
+          }
+        }
+
+        var io = null;
+        try {
+          io = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add('is-in');
+                io.unobserve(entry.target);
+              });
+            },
+            { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
+          );
+          targets.forEach(function (el) {
+            io.observe(el);
+          });
+        } catch (e) {
+          window.__revealAll();
+          return;
+        }
+
+        requestAnimationFrame(function () {
+          requestAnimationFrame(revealInView);
+        });
+        setTimeout(revealInView, 350);
+
+        // The observer alone is not enough: a fast flick or an anchor jump can
+        // move an element past the viewport between frames, so it never
+        // registers as intersecting and would stay hidden for good. This sweep
+        // is the guarantee — anything at or above the fold gets revealed. It
+        // unhooks itself once every target has fired.
+        var queued = false;
+        function onScroll() {
+          if (queued) return;
+          queued = true;
+          requestAnimationFrame(function () {
+            queued = false;
+            revealInView();
+            if (!targets.length) {
+              window.removeEventListener('scroll', onScroll);
+              window.removeEventListener('resize', onScroll);
+            }
+          });
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll, { passive: true });
+
+        // A backgrounded tab freezes rAF, so a reveal can be left half-done.
+        // Sweep again on return, in case the reader never scrolls afterwards.
+        document.addEventListener('visibilitychange', function () {
+          if (!document.hidden) {
+            revealInView();
+            onScroll();
+          }
+        });
+
+        // Last resort: if nothing at all has been revealed by now, the observer
+        // is not doing its job in this browser — drop the whole mechanism and
+        // show the page.
+        setTimeout(function () {
+          if (!document.querySelector('.is-in')) window.__revealAll();
+        }, 2500);
+      })();
+    </script>
+
+    <!--
+      Sticky fit.
+
+      A pinned panel taller than the window would have its lower half clipped.
+      Rather than switch the effect off on shorter windows — which is what a
+      height media query did, and it meant anyone on a sub-900px window never
+      saw the stacking at all — measure each panel and pin it bottom-aligned
+      when it does not fit. `top` goes negative, so the panel scrolls up until
+      its bottom meets the viewport bottom and then holds.
+
+      Progressive enhancement: with no JS the CSS fallbacks apply (top: 0 and
+      the staggered deck offsets), which is the previous behaviour.
+    -->
+    <script is:inline>
+      (function () {
+        if (!window.matchMedia('(min-width: 1024px)').matches) return;
+
+        function fit() {
+          var vh = window.innerHeight;
+
+          document.querySelectorAll('.stack-base').forEach(function (el) {
+            el.style.setProperty('--stack-top', Math.min(0, vh - el.offsetHeight) + 'px');
+          });
+
+          document.querySelectorAll('.deck-card').forEach(function (el, i) {
+            var wanted = 88 + i * 17.6; // 5.5rem + i * 1.1rem
+            el.style.setProperty('--deck-top', Math.min(wanted, vh - el.offsetHeight - 8) + 'px');
+          });
+        }
+
+        fit();
+        // Heights shift once the webfonts land, so measure again after load.
+        window.addEventListener('load', fit);
+        var t;
+        window.addEventListener('resize', function () {
+          clearTimeout(t);
+          t = setTimeout(fit, 150);
+        });
+      })();
+    </script>
+
+    <!--
+      Magnetic primary CTA: the button leans a few pixels toward the cursor.
+      Fine-pointer devices only, never when motion is unwelcome, and purely
+      cosmetic — the link works identically without any of it.
+    -->
+    <script is:inline>
+      (function () {
+        try {
+          if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        } catch (e) {
+          return;
+        }
+
+        document.querySelectorAll('.magnetic').forEach(function (el) {
+          el.addEventListener('mousemove', function (e) {
+            var r = el.getBoundingClientRect();
+            var x = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
+            var y = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
+            el.style.transform = 'translate(' + x * 5 + 'px,' + (y * 3 - 1) + 'px)';
+          });
+          el.addEventListener('mouseleave', function () {
+            el.style.transform = '';
+          });
+        });
+      })();
+    </script>
+
+    <script is:inline>
+      (function () {
+        var btn = document.getElementById('notes-toggle');
+        if (!btn) return;
+        btn.hidden = false;
+        var dot = document.getElementById('notes-dot');
+        btn.addEventListener('click', function () {
+          var on = document.documentElement.getAttribute('data-notes') === 'on';
+          document.documentElement.setAttribute('data-notes', on ? 'off' : 'on');
+          btn.setAttribute('aria-pressed', String(!on));
+          if (dot) dot.style.background = on ? '' : 'var(--color-clay)';
+        });
+      })();
+    </script>
+
+    <script is:inline>
+      // Mobile menu: a <dialog>-free, CSS-light disclosure so the page still
+      // works with JS disabled (the nav links are in the DOM either way).
+      (function () {
+        var btn = document.getElementById('menu-toggle');
+        var panel = document.getElementById('mobile-menu');
+        if (!btn || !panel) return;
+
+        function setOpen(open) {
+          btn.setAttribute('aria-expanded', String(open));
+          panel.toggleAttribute('hidden', !open);
+          document.body.style.overflow = open ? 'hidden' : '';
+        }
+
+        btn.addEventListener('click', function () {
+          setOpen(btn.getAttribute('aria-expanded') !== 'true');
+        });
+
+        panel.addEventListener('click', function (e) {
+          if (e.target.closest('a')) setOpen(false);
+        });
+
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
+            setOpen(false);
+            btn.focus();
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

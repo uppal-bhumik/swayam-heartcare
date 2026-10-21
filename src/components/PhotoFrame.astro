@@ -1,0 +1,94 @@
+---
+/**
+ * A designed stand-in for photography that does not exist yet.
+ *
+ * The existing site has only four images: two straight-from-phone shots of a
+ * consulting room, a 300x450 portrait, and a 44-megapixel logo. None is usable
+ * at the sizes this design calls for, and none is available locally. Rather
+ * than ship a grey box or pass off stock imagery as the real clinic, each slot
+ * states the photograph that belongs there — so the frame doubles as the shot
+ * list for the photo session recommended in the audit.
+ *
+ * `maxH` matters: a 4:5 ratio at tablet width would otherwise produce an
+ * 840px-tall empty box that dominates the page.
+ */
+interface Props {
+  ratio?: string;
+  maxH?: string;
+  brief: string;
+  caption?: string;
+  tone?: 'paper' | 'teal';
+  class?: string;
+}
+const {
+  ratio = '4 / 5',
+  maxH = '34rem',
+  brief,
+  caption,
+  tone = 'paper',
+  class: className = '',
+} = Astro.props;
+
+const isTeal = tone === 'teal';
+const uid = Math.random().toString(36).slice(2, 8);
+---
+
+<div class={className}>
+  <figure
+    class="relative overflow-hidden rounded-sm"
+    style={`aspect-ratio: ${ratio}; max-height: ${maxH}`}
+  >
+    <div class={`absolute inset-0 ${isTeal ? 'bg-teal-900' : 'bg-teal-100'}`} aria-hidden="true">
+      {/* Fine diagonal hatch — reads as a prepared surface, not a broken image. */}
+      <svg class="h-full w-full" aria-hidden="true">
+        <defs>
+          <pattern
+            id={`hatch-${uid}`}
+            width="7"
+            height="7"
+            patternUnits="userSpaceOnUse"
+            patternTransform="rotate(45)"
+          >
+            <line
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="7"
+              stroke={isTeal ? '#8fb9ae' : '#1f6f5f'}
+              stroke-width="0.5"
+              opacity="0.18"></line>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill={`url(#hatch-${uid})`}></rect>
+      </svg>
+    </div>
+
+    <div class="absolute inset-0 flex flex-col justify-between p-5 sm:p-7">
+      <span class="eyebrow" style={isTeal ? '' : 'color: var(--color-teal-600)'}>Photography</span>
+
+      <div class="max-w-[30ch]">
+        <p
+          class={`font-serif text-[1.0625rem] leading-snug sm:text-xl ${isTeal ? 'text-white' : 'text-teal-900'}`}
+        >
+          {brief}
+        </p>
+        {
+          caption && (
+            <p
+              class={`mt-2 text-[0.8125rem] leading-relaxed ${isTeal ? 'text-teal-300' : 'text-ink-soft'}`}
+            >
+              {caption}
+            </p>
+          )
+        }
+      </div>
+    </div>
+
+    <div
+      class="pointer-events-none absolute inset-2 sm:inset-3"
+      style={`border: 1px solid ${isTeal ? 'rgba(143,185,174,.3)' : 'rgba(31,111,95,.22)'}`}
+      aria-hidden="true"
+    >
+    </div>
+  </figure>
+</div>

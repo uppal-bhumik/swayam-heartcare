@@ -1,0 +1,34 @@
+---
+import { practice } from '../data/content';
+---
+
+<!--
+  Persistent mobile contact bar.
+
+  The audit's single costliest finding was that on the existing site the hero
+  CTA is display:none below 768px and the phone number is not a link anywhere,
+  so a phone visitor has no quick route to contact at all. This fixes both.
+
+  WhatsApp is deliberately absent: the strategy recommends it, but whether the
+  number supports it is unconfirmed (Q14), and a dead WhatsApp link is worse
+  than none.
+-->
+<div
+  class="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-paper/95 backdrop-blur-md lg:hidden"
+  style="padding-bottom: env(safe-area-inset-bottom)"
+>
+  <div class="grid grid-cols-2 gap-2 px-3 py-2.5">
+    <a href={practice.phoneHref} class="btn btn-ghost !min-h-[3rem]">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path
+          d="M14.5 11.3v2a1.3 1.3 0 0 1-1.46 1.33 13.2 13.2 0 0 1-5.75-2.05 13 13 0 0 1-4-4A13.2 13.2 0 0 1 1.24 2.8 1.33 1.33 0 0 1 2.56 1.33h2a1.33 1.33 0 0 1 1.33 1.15c.08.64.24 1.27.46 1.87a1.33 1.33 0 0 1-.3 1.4l-.85.85a10.67 10.67 0 0 0 4 4l.85-.85a1.33 1.33 0 0 1 1.4-.3c.6.22 1.23.38 1.87.46a1.33 1.33 0 0 1 1.15 1.35Z"
+          stroke="currentColor"
+          stroke-width="1.3"
+          stroke-linecap="round"
+          stroke-linejoin="round"></path>
+      </svg>
+      Call
+    </a>
+    <a href="#contact" class="btn btn-primary !min-h-[3rem]">Request a call back</a>
+  </div>
+</div>
