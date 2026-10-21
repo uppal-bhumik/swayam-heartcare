@@ -64,16 +64,22 @@ const { lead, rest, total, consentWarning } = testimonials;
       </figure>
     </div>
 
-    <div class="mt-12 grid grid-cols-1 gap-px border-t border-line md:grid-cols-3">
+    <!--
+      On a phone these three stacked as grey paragraphs separated by a single
+      hairline, which read as one wall of text. Below md each is a distinct
+      panel with its own ground and a clay edge; from md up the panels fall
+      away and they return to editorial columns divided by rules.
+    -->
+    <div class="mt-10 grid grid-cols-1 gap-5 md:mt-12 md:grid-cols-3 md:gap-px md:border-t md:border-line">
       {
         rest.map((t, i) => (
           <figure
             data-reveal
             style={`--d: ${i}`}
             class:list={[
-              'flex flex-col pt-8',
-              i > 0 && 'border-t border-line md:border-t-0 md:border-l md:pl-7',
-              i > 0 && 'md:-mt-px',
+              'flex flex-col rounded-md border border-line border-l-2 border-l-clay bg-paper-sunk p-5',
+              'md:rounded-none md:border-0 md:bg-transparent md:p-0 md:pt-8',
+              i > 0 && 'md:border-l md:border-l-line md:pl-7 md:-mt-px',
             ]}
           >
             <blockquote>

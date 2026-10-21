@@ -177,18 +177,25 @@ const jsonLd = {
         // registers as intersecting and would stay hidden for good. This sweep
         // is the guarantee — anything at or above the fold gets revealed. It
         // unhooks itself once every target has fired.
-        var queued = false;
+        // Throttled on a timestamp rather than requestAnimationFrame. rAF is
+        // suspended in a background tab, and gating on it meant that if a
+        // frame callback was ever dropped the "queued" flag stayed set and the
+        // sweep never ran again — leaving the rest of the page hidden for good.
+        // setTimeout is clamped in the background but always fires.
+        var lastRun = 0;
+        var timer;
+        function sweep() {
+          lastRun = Date.now();
+          revealInView();
+          if (!targets.length) {
+            window.removeEventListener('scroll', onScroll);
+            window.removeEventListener('resize', onScroll);
+          }
+        }
         function onScroll() {
-          if (queued) return;
-          queued = true;
-          requestAnimationFrame(function () {
-            queued = false;
-            revealInView();
-            if (!targets.length) {
-              window.removeEventListener('scroll', onScroll);
-              window.removeEventListener('resize', onScroll);
-            }
-          });
+          clearTimeout(timer);
+          if (Date.now() - lastRun > 100) sweep();
+          else timer = setTimeout(sweep, 100);
         }
         window.addEventListener('scroll', onScroll, { passive: true });
         window.addEventListener('resize', onScroll, { passive: true });
